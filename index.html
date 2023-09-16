@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+<script src="provider.js"></script>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Search Application</title>
+    <!--
+        Thanks Chat GPT who provides this CSS
+    -->
+    <style>
+      body,
+      h1,
+      input,
+      button {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+      }
+
+      h1 {
+        background-color: #fff;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      h5 {
+        text-align: center;
+        color: #404040;
+      }
+
+      #searchInput {
+        width: 80%;
+        padding: 10px;
+        margin: 20px auto;
+        display: block;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+
+      #searchResults {
+        width: 80%;
+        margin: 0 auto;
+        padding: 10px;
+        background-color: #fff;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      #searchResults div {
+        padding: 5px;
+        border-bottom: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Word Search</h1>
+
+    <input type="text" id="searchInput" placeholder="Enter your word" />
+    <div id="searchResults"></div>
+    <h5>&copy; 2023 Word Search App | CAIMEO</h5>
+    <script>
+      const searchInput = document.getElementById("searchInput");
+      const searchResults = document.getElementById("searchResults");
+
+      const options = {
+        keys: ["value"],
+        threshold: 0,
+      };
+      const fuse = new Fuse(flattenedData, options);
+
+      function searchForWord(query) {
+        const results = fuse.search(query);
+        const word = results.map((result) => {
+          const path = result.item.path;
+          const value = result.item.value;
+          return {
+            path,
+            value,
+          };
+        });
+        return word;
+      }
+      function showPath(x) {
+        const y = x.split(".");
+        return (
+          y[0].replace("XB", "选修").replace("B", "必修") + "-Unit-" + y[1]
+        );
+      }
+
+      function updateSearchResults() {
+        const searchTerm = searchInput.value.trim();
+        const results = searchForWord(searchTerm);
+
+        searchResults.innerHTML = "";
+
+        if (results.length === 0) {
+          searchResults.innerHTML = "No results found.";
+          return;
+        }
+        results.forEach((result) => {
+          const resultItem = document.createElement("div");
+          resultItem.innerHTML =
+            ` <strong>${showPath(result.path)}</strong> : ` + result.value;
+          searchResults.appendChild(resultItem);
+        });
+      }
+
+      searchInput.addEventListener("input", updateSearchResults);
+    </script>
+  </body>
+</html>
